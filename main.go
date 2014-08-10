@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 
-	"101/lib/decoder"
-	_ "101/lib/decoder/decoders"
-	"101/lib/mapper"
-	"101/lib/mqttservices"
-	"101/lib/rfm12b"
-	"101/lib/wemodriver"
+	_ "github.com/danward79/SomethingInTheBack/lib/decoder/decoders"
+	"github.com/danward79/SomethingInTheBack/lib/mapper"
+	"github.com/danward79/SomethingInTheBack/lib/mqttservices"
+	"github.com/danward79/SomethingInTheBack/lib/rfm12b"
+	"github.com/danward79/SomethingInTheBack/lib/wemodriver"
+
+	"github.com/danward79/SomethingInTheBack/lib/decoder"
 )
 
 const (

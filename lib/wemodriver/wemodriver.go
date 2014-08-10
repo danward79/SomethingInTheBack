@@ -3,8 +3,8 @@ package wemodriver
 //Wemo driver to interface to wemo event subscriptions
 
 import (
-	"101/lib/logger"
 	"fmt"
+	"github.com/danward79/SomethingInTheBack/lib/logger"
 	"github.com/danward79/go.wemo"
 	"log"
 	"time"

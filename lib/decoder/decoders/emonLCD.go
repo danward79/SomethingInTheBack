@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"101/lib/decoder"
+	"github.com/danward79/SomethingInTheBack/lib/decoder"
 )
 
 //LCDData data structure

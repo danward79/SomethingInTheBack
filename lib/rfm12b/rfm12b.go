@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"101/lib/logger"
 	"github.com/chimera/rs232"
+	"github.com/danward79/SomethingInTheBack/lib/logger"
 )
 
 //Rfm12b configuration
@@ -26,11 +26,11 @@ func New(portName string, baud uint32, path string) *Rfm12b {
 }
 
 //Starts an instance of RFM12b listening to the specified port and outputs on the channel provided.
-func (self *Rfm12b) open(cs chan []byte) {
+func (r *Rfm12b) open(cs chan []byte) {
 
-	logger := logger.New(self.loggerPath)
+	logger := logger.New(r.loggerPath)
 
-	device, err := rs232.Open(self.portName, rs232.Options{BitRate: self.baud, DataBits: 8, StopBits: 1})
+	device, err := rs232.Open(r.portName, rs232.Options{BitRate: r.baud, DataBits: 8, StopBits: 1})
 	gotError(err)
 	defer device.Close()
 
@@ -42,7 +42,7 @@ func (self *Rfm12b) open(cs chan []byte) {
 		oa := strings.Split(line, ` `)
 
 		// If Logging path is proved Log output to logger
-		if self.loggerPath != "" {
+		if r.loggerPath != "" {
 			logger.Log(line)
 		}
 
@@ -60,10 +60,10 @@ func (self *Rfm12b) open(cs chan []byte) {
 	gotError(lineScanner.Err())
 }
 
-//Start logger
-func (self *Rfm12b) Start() chan []byte {
+//Start rfm12b driver
+func (r *Rfm12b) Start() chan []byte {
 	chOut := make(chan []byte)
-	go self.open(chOut)
+	go r.open(chOut)
 	return chOut
 }
 
@@ -75,8 +75,8 @@ func gotError(err error) {
 }
 
 //Write packet to rfm12B
-func (self *Rfm12b) Write() {
-	device, err := rs232.Open(self.portName, rs232.Options{BitRate: self.baud, DataBits: 8, StopBits: 1})
+func (r *Rfm12b) Write() {
+	device, err := rs232.Open(r.portName, rs232.Options{BitRate: r.baud, DataBits: 8, StopBits: 1})
 	gotError(err)
 	defer device.Close()
 	fmt.Println(device)

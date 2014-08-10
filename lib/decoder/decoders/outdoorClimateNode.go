@@ -1,7 +1,7 @@
 package decoders
 
 import (
-	"101/lib/decoder"
+	"github.com/danward79/SomethingInTheBack/lib/decoder"
 )
 
 func init() {

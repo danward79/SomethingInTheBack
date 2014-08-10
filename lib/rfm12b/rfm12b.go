@@ -4,7 +4,7 @@ package rfm12b
 
 import (
 	"bufio"
-	"fmt"
+
 	"log"
 	"strconv"
 	"strings"
@@ -26,7 +26,7 @@ func New(portName string, baud uint32, path string) *Rfm12b {
 }
 
 //Starts an instance of RFM12b listening to the specified port and outputs on the channel provided.
-func (r *Rfm12b) open(cs chan []byte) {
+func (r *Rfm12b) open(chOut chan []byte) {
 
 	logger := logger.New(r.loggerPath)
 
@@ -54,7 +54,7 @@ func (r *Rfm12b) open(cs chan []byte) {
 					out = append(out, byte(v))
 				}
 			}
-			cs <- out
+			chOut <- out
 		}
 	}
 	gotError(lineScanner.Err())
@@ -72,12 +72,4 @@ func gotError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-//Write packet to rfm12B
-func (r *Rfm12b) Write() {
-	device, err := rs232.Open(r.portName, rs232.Options{BitRate: r.baud, DataBits: 8, StopBits: 1})
-	gotError(err)
-	defer device.Close()
-	fmt.Println(device)
 }

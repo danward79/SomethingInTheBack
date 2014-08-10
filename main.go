@@ -25,14 +25,14 @@ const (
 )
 
 func main() {
-	jeelink := rfm12b.New(portName, baud, logPathJeeLink)
+	jeelink := rfm12b.New2(portName, baud, logPathJeeLink)
 	wemos := wemodriver.New(wemoIP, device, timeout, logPathWemo)
 
 	//Start mqtt Broker
 	go mqttservices.NewBroker(mqttBrokerIP).Run()
 
 	//Both the wemo and the Jeelink output onto a channel, which is multiplexed bellow with fanIn
-	chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Start()))
+	chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Open()))
 
 	//Declare a new client, Publish incomming data
 	mqttClient := mqttservices.NewClient(mqttBrokerIP)
@@ -41,6 +41,7 @@ func main() {
 	//Subscribe to all "home" topics
 	for m := range mqttClient.Subscribe("home/#") {
 		fmt.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
+		jeelink.ChIn <- []byte(m.TopicName)
 	}
 }
 

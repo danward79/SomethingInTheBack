@@ -10,12 +10,13 @@ This repo is an attempt of a backend for some JeeNode and Wemo devices I have. T
 ###Currently it has the following functionality.
 
 - MQTT Broker which manages subscriptions and published data. Uses the MQTT Services library, which uses [Jeffallen's](https://github.com/jeffallen/mqtt) and [Huin's](https://github.com/huin/mqtt) librarys
-- Serial interface to JeeLink so that RF messages can be received which use the Arduino RFM12b driver from Jeelabs. Uses the serial library from [Chimera](https://github.com/chimera/rs232), outputs a channel of bytes.
+- Two-way Serial interface to JeeLink so that RF messages can be received which use the Arduino RFM12b driver from Jeelabs. Uses the serial library from [Chimera](https://github.com/chimera/rs232), outputs a channel of bytes.
 - Wemo interface which subscribes to any discovered devices. So that state changes are received. This uses a version of [Savaki's library](https://github.com/savaki/go.wemo), to which I added a subscription service. Which is [here](https://github.com/danward79/go.wemo). I am waiting for my [pull](https://github.com/savaki/go.wemo/pull/1) request. This outputs a channel of map[string]interface{}.
 - Logging device which can be passed to the Wemo and RFM12b drivers above to log the incomming data. This produces exactly the same output as JCW's logger. It is called with a simple string.
 - RFM12b packets are decoded by the decoder and it's decoders. This outputs a channel of map[string]interface{}.
 - These are routed through a mapper which adds location info. This outputs a channel of map[string]interface{}.
 - Data is then published using the MQTT service. Which takes a channel of map[string]interface{}.
+- Time packet transmission to keep displays up to date.
 
 **Using Channels** makes passing data around very easy. With a simple multiplexer and use of interfaces it is possible to push data in a similar manner to the publisher.
 
@@ -33,8 +34,8 @@ go mqttClient.PublishMap(fanIn(chWemo, chJeeLink))
 
 I don't know how far I will take this, but here is a list of things in no particular order that need doing.
 
-- Serial driver needs to be converted to be two way. The main reason for this is...
-- I need to make time transmissions to keep my display upto date. This is done elsewhere at the moment.
+- ~~Serial driver needs to be converted to be two way. The main reason for this is...~~
+- ~~I need to make time transmissions to keep my display upto date. This is done elsewhere at the moment.~~
 - Database needs choosing and a method of adding data decided on. Do I subscribe to all events and use MQTT or do I hook in earlier in the chain?
 - Time based task scheduler so that...
 - Sunrise and Set events can be sent

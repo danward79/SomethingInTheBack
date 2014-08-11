@@ -36,7 +36,8 @@ I don't know how far I will take this, but here is a list of things in no partic
 
 - ~~Serial driver needs to be converted to be two way. The main reason for this is...~~
 - ~~I need to make time transmissions to keep my display upto date. This is done elsewhere at the moment.~~
-- Database needs choosing and a method of adding data decided on. Do I subscribe to all events and use MQTT or do I hook in earlier in the chain?
-- Time based task scheduler so that...
-- Sunrise and Set events can be sent
-- Weather forecast subscription, probably using Yahoo weather.
+- TODO: Database needs choosing and a ...
+- TODO: method of adding data decided on. Subscribe to all events and use MQTT or hook in earlier in the chain?
+- TODO: Time based task scheduler so that...
+- TODO: Sunrise and Set events can be sent
+- TODO: Weather forecast subscription, probably using Yahoo weather.

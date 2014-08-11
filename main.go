@@ -29,7 +29,6 @@ const (
 
 func main() {
 	jeelink := rfm12b.New(portName, baud, logPathJeeLink)
-	//TODO: Loss of network causes fail
 	wemos := wemodriver.New(wemoIP, device, timeout, logPathWemo)
 
 	//Start mqtt Broker
@@ -53,24 +52,4 @@ func main() {
 	for m := range mqttClient.Subscribe("home/#") {
 		fmt.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
 	}
-}
-
-//TODO: Move to a seperate file or library?
-//Multiplex two channels to a single output, this code was pinched from a google presentation ;-)
-func fanIn(input1 <-chan map[string]interface{}, input2 <-chan map[string]interface{}) chan map[string]interface{} {
-	c := make(chan map[string]interface{})
-
-	go func() {
-		for {
-			c <- <-input1
-		}
-	}()
-
-	go func() {
-		for {
-			c <- <-input2
-		}
-	}()
-
-	return c
 }

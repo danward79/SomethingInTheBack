@@ -13,7 +13,7 @@ import (
 	"github.com/danward79/SomethingInTheBack/lib/logger"
 )
 
-//Rfm12b configuration
+//Rfm12b configuration data
 type Rfm12b struct {
 	portName   string
 	baud       uint32

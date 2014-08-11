@@ -41,6 +41,7 @@ func main() {
 	mqttClient := mqttservices.NewClient(mqttBrokerIP)
 	go mqttClient.PublishMap(fanIn(wemos.Start(), chJeeLink))
 
+	//TODO: Need to work out how to manage this
 	//Timebroadcast
 	go func() {
 		for t := range timebroadcast.New(timeBroadcastPeriod) {
@@ -48,7 +49,7 @@ func main() {
 		}
 	}()
 
-	//Subscribe to all "home" topics
+	//Subscribe to all "home" topics just for development
 	for m := range mqttClient.Subscribe("home/#") {
 		fmt.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
 	}

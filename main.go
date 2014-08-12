@@ -42,17 +42,19 @@ func main() {
 	go mqttClient.PublishMap(fanIn(wemos.Start(), chJeeLink))
 
 	//TODO: Need to work out how to manage this
-	//Timebroadcast
-	go func() {
-		for t := range timebroadcast.New(timeBroadcastPeriod) {
+	//Timebroadcast and subscription
+	chSub := mqttClient.Subscribe("home/#")
+	chTime := timebroadcast.New(timeBroadcastPeriod)
+
+	for {
+		select {
+		case m := <-chSub:
+			fmt.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
+		case t := <-chTime:
 			jeelink.ChIn <- t
 		}
-	}()
-
-	//Subscribe to all "home" topics just for development
-	for m := range mqttClient.Subscribe("home/#") {
-		fmt.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
 	}
+
 }
 
 //TODO: Move to a seperate library?

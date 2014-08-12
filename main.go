@@ -45,13 +45,14 @@ func main() {
 	//Timebroadcast and subscription
 	chSub := mqttClient.Subscribe("home/#")
 	chTime := timebroadcast.New(timeBroadcastPeriod)
+	//chSunrise :=
 
 	for {
 		select {
 		case m := <-chSub:
 			fmt.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
-		case t := <-chTime:
-			jeelink.ChIn <- t
+		case jeelink.ChIn <- chTime:
+			//jeelink.ChIn <- t
 		}
 	}
 

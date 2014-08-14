@@ -3,38 +3,90 @@ package sunriseset
 
 import (
 	"fmt"
+	"github.com/danward79/sunrise"
+	"github.com/robfig/cron"
 	"time"
-
-	"github.com/keep94/sunrise"
 )
 
+//Loc stores data about the location of sunrise and set required.
 type Loc struct {
-	Location string
+	location  *sunrise.Location
+	formatStr string
+	cronSch   *cron.Cron
 }
 
-func New(loc string) *Loc {
-	&Loc{Location: loc}
+//New returns a new location
+func New(latitude float64, longitude float64) *Loc {
+	return &Loc{location: sunrise.NewLocation(latitude, longitude), formatStr: "Jan 2 15:04:05", cronSch: cron.New()}
 }
 
-func (self *Loc) Start() {
+//Start the process
+func (l *Loc) Start() chan map[string]interface{} {
+	chOut := make(chan map[string]interface{})
 
-	var s sunrise.Sunrise
-
-	// Start time is June 1, 2013 PST
-	location, _ := time.LoadLocation("Australia/Melbourne")
-	startTime := time.Date(2014, 8, 7, 0, 0, 0, 0, location)
-
-	// Coordinates of LA are 34.05N 118.25W
-	s.Around(-37.88, 144.98, startTime)
-
-	for s.Sunrise().Before(startTime) {
-		s.AddDays(1)
+	//Is it before or after todays sunrise/sunset?
+	l.location.Today()
+	tSunrise := l.location.Sunrise()
+	if time.Now().After(tSunrise) {
+		tSunrise = l.nextSunrise()
 	}
 
-	formatStr := "Jan 2 15:04:05"
-	for i := 0; i < 5; i++ {
-		fmt.Printf("Sunrise: %s Sunset: %s\n", s.Sunrise().Format(formatStr), s.Sunset().Format(formatStr))
-		s.AddDays(1)
+	tSunset := l.nextSunset()
+	if time.Now().After(tSunset) {
+		tSunset = l.nextSunset()
 	}
 
+	//Schedule cron
+	l.cronSch.AddFunc(cronFormat(tSunrise), func() { send(chOut) })
+	l.cronSch.AddFunc(cronFormat(tSunset), func() { send(chOut) })
+
+	return chOut
 }
+
+func send(ch chan map[string]interface{}) {
+
+}
+
+func cronFormat(t time.Time) string {
+	//Second, Minute, Hour, Dom, Month, Dow
+	s := fmt.Sprintf("%d,%d,%d,%d,%d,*", t.Second(), t.Minute(), t.Hour(), t.Day(), int(t.Month()))
+	return s
+}
+
+func (l *Loc) nextSunset() time.Time {
+	l.location.Today()
+	l.location.AddDays(1)
+	return l.location.Sunset()
+}
+
+func (l *Loc) nextSunrise() time.Time {
+	l.location.Today()
+	l.location.AddDays(1)
+	return l.location.Sunrise()
+}
+
+/*Process should be..
+
+1. Create a new instance. Loc, Time Format
+
+			melbourne := sunrise.NewLocation(-37.81, 144.96)
+
+			formatStr := "Jan 2 15:04:05"
+
+			cron.New
+
+2. Start Calculate first sunset and sunrise times.
+
+			calc sunset & sunrise
+			schedule
+
+3. Schedule those to be sent to mqtt
+
+			cron.add....
+
+4. On a scheduled broadcast recalc the next sunrise or sunset.
+
+			fmt.Println(melbourne.Sunrise().Format(formatStr))
+			fmt.Println(melbourne.Sunset().Format(formatStr))
+
+*/

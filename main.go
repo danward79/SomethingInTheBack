@@ -8,6 +8,7 @@ import (
 	"github.com/danward79/SomethingInTheBack/lib/mapper"
 	"github.com/danward79/SomethingInTheBack/lib/mqttservices"
 	"github.com/danward79/SomethingInTheBack/lib/rfm12b"
+	"github.com/danward79/SomethingInTheBack/lib/sunriseset"
 	"github.com/danward79/SomethingInTheBack/lib/timebroadcast"
 	"github.com/danward79/SomethingInTheBack/lib/wemodriver"
 )
@@ -30,6 +31,8 @@ const (
 func main() {
 	jeelink := rfm12b.New(portName, baud, logPathJeeLink)
 	wemos := wemodriver.New(wemoIP, device, timeout, logPathWemo)
+	melbourne := sunriseset.New(-37.81, 144.96)
+	melbourne.Start()
 
 	//Start mqtt Broker
 	go mqttservices.NewBroker(mqttBrokerIP).Run()
@@ -51,8 +54,8 @@ func main() {
 		select {
 		case m := <-chSub:
 			fmt.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
-		case jeelink.ChIn <- chTime:
-			//jeelink.ChIn <- t
+		case m := <-chTime:
+			jeelink.ChIn <- m
 		}
 	}
 

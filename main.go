@@ -32,7 +32,6 @@ func main() {
 	jeelink := rfm12b.New(portName, baud, logPathJeeLink)
 	wemos := wemodriver.New(wemoIP, device, timeout, logPathWemo)
 	melbourne := sunriseset.New(-37.81, 144.96)
-	melbourne.Start()
 
 	//Start mqtt Broker
 	go mqttservices.NewBroker(mqttBrokerIP).Run()
@@ -43,12 +42,12 @@ func main() {
 	//Declare a new client, Publish incomming data
 	mqttClient := mqttservices.NewClient(mqttBrokerIP)
 	go mqttClient.PublishMap(fanIn(wemos.Start(), chJeeLink))
+	go mqttClient.PublishMap(melbourne.Start())
 
 	//TODO: Need to work out how to manage this
 	//Timebroadcast and subscription
 	chSub := mqttClient.Subscribe("home/#")
 	chTime := timebroadcast.New(timeBroadcastPeriod)
-	//chSunrise :=
 
 	for {
 		select {

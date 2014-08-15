@@ -37,14 +37,33 @@ func (l *Loc) Start() chan map[string]interface{} {
 	}
 
 	//Schedule cron
-	l.cronSch.AddFunc(cronFormat(tSunrise), func() { send(chOut) })
-	l.cronSch.AddFunc(cronFormat(tSunset), func() { send(chOut) })
+	l.sunriseSchedule(tSunrise)
+	l.sunsetSchedule(tSunset)
 
 	return chOut
 }
 
-func send(ch chan map[string]interface{}) {
+func send(s string, ch chan map[string]interface{}) {
+	m := make(map[string]interface{})
+	m[s] = "true"
+	ch <- m
 
+}
+
+func (l *Loc) sunriseSchedule(t time.Time) {
+	chOut := make(chan map[string]interface{})
+	l.cronSch.AddFunc(cronFormat(t), func() {
+		send("sunrise", chOut)
+		l.sunriseSchedule(l.nextSunrise())
+	})
+}
+
+func (l *Loc) sunsetSchedule(t time.Time) {
+	chOut := make(chan map[string]interface{})
+	l.cronSch.AddFunc(cronFormat(t), func() {
+		send("sunset", chOut)
+		l.sunsetSchedule(l.nextSunset())
+	})
 }
 
 func cronFormat(t time.Time) string {

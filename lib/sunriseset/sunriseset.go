@@ -42,7 +42,6 @@ func (l *Loc) Start() chan map[string]interface{} {
 	l.scheduleNext(tSunset, false, chOut)
 	l.cronSch.Start()
 	//TODO: Need to work out how to remove completed jobs or reschedule existing jobs.
-	l.test(time.Now(), chOut)
 
 	return chOut
 }
@@ -53,24 +52,6 @@ func send(s string, t string, ch chan map[string]interface{}) {
 	m["location"] = s
 	m["state"] = t
 	ch <- m
-}
-
-//test to make sure it is all working
-func (l *Loc) test(t time.Time, ch chan map[string]interface{}) {
-
-	t = t.Add(10 * time.Second)
-	//Second, Minute, Hour, Dom, Month, Dow
-	l.cronSch.AddFunc(cronFormat(t), func() {
-
-		send("sunrise", fmt.Sprintf("%d", -1), ch)
-		l.test(time.Now().Add(10*time.Second), ch)
-
-	})
-
-	for k, v := range l.cronSch.Entries() {
-		fmt.Println(k, v)
-	}
-
 }
 
 //schedule the next sunrise or sunset, set sunrise true for Sunrise

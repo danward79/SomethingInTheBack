@@ -31,81 +31,80 @@ func (l *Loc) Start() chan map[string]interface{} {
 		tSunrise = l.nextSunrise()
 	}
 
-	tSunset := l.nextSunset()
+	l.location.Today()
+	tSunset := l.location.Sunset()
 	if time.Now().After(tSunset) {
 		tSunset = l.nextSunset()
 	}
 
 	//Schedule cron
-	l.sunriseSchedule(tSunrise)
-	l.sunsetSchedule(tSunset)
+	l.scheduleNext(tSunrise, true, chOut)
+	l.scheduleNext(tSunset, false, chOut)
+	l.cronSch.Start()
+	//TODO: Need to work out how to remove completed jobs or reschedule existing jobs.
+	l.test(time.Now(), chOut)
 
 	return chOut
 }
 
-func send(s string, ch chan map[string]interface{}) {
+//send a sunrise or sunset event to the output channel
+func send(s string, t string, ch chan map[string]interface{}) {
 	m := make(map[string]interface{})
-	m[s] = "true"
+	m["location"] = s
+	m["state"] = t
 	ch <- m
-
 }
 
-func (l *Loc) sunriseSchedule(t time.Time) {
-	chOut := make(chan map[string]interface{})
+//test to make sure it is all working
+func (l *Loc) test(t time.Time, ch chan map[string]interface{}) {
+
+	t = t.Add(10 * time.Second)
+	//Second, Minute, Hour, Dom, Month, Dow
 	l.cronSch.AddFunc(cronFormat(t), func() {
-		send("sunrise", chOut)
-		l.sunriseSchedule(l.nextSunrise())
+
+		send("sunrise", fmt.Sprintf("%d", -1), ch)
+		l.test(time.Now().Add(10*time.Second), ch)
+
 	})
+
+	for k, v := range l.cronSch.Entries() {
+		fmt.Println(k, v)
+	}
+
 }
 
-func (l *Loc) sunsetSchedule(t time.Time) {
-	chOut := make(chan map[string]interface{})
-	l.cronSch.AddFunc(cronFormat(t), func() {
-		send("sunset", chOut)
-		l.sunsetSchedule(l.nextSunset())
-	})
+//schedule the next sunrise or sunset, set sunrise true for Sunrise
+func (l *Loc) scheduleNext(t time.Time, sunrise bool, ch chan map[string]interface{}) {
+	for i := -1; i <= 1; i++ {
+		l.cronSch.AddFunc(cronFormat(t.Add(time.Duration(i)*time.Hour)), func() {
+			if sunrise {
+				send("sunrise", fmt.Sprintf("%d", i), ch)
+				l.scheduleNext(l.nextSunrise(), true, ch)
+			} else {
+				send("sunset", fmt.Sprintf("%d", i), ch)
+				l.scheduleNext(l.nextSunset(), false, ch)
+			}
+		})
+	}
 }
 
+//cronFormat converts a time.Time to a cron schedule string
 func cronFormat(t time.Time) string {
 	//Second, Minute, Hour, Dom, Month, Dow
-	s := fmt.Sprintf("%d,%d,%d,%d,%d,*", t.Second(), t.Minute(), t.Hour(), t.Day(), int(t.Month()))
+	s := fmt.Sprintf("%d %d %d %d %d *", t.Second(), t.Minute(), t.Hour(), t.Day(), int(t.Month()))
 	return s
 }
 
+//nextSunset returns the time of the next sunset
 func (l *Loc) nextSunset() time.Time {
 	l.location.Today()
 	l.location.AddDays(1)
 	return l.location.Sunset()
 }
 
+//nextSunrise returns the time of the next sunrise
 func (l *Loc) nextSunrise() time.Time {
 	l.location.Today()
 	l.location.AddDays(1)
 	return l.location.Sunrise()
 }
-
-/*Process should be..
-
-1. Create a new instance. Loc, Time Format
-
-			melbourne := sunrise.NewLocation(-37.81, 144.96)
-
-			formatStr := "Jan 2 15:04:05"
-
-			cron.New
-
-2. Start Calculate first sunset and sunrise times.
-
-			calc sunset & sunrise
-			schedule
-
-3. Schedule those to be sent to mqtt
-
-			cron.add....
-
-4. On a scheduled broadcast recalc the next sunrise or sunset.
-
-			fmt.Println(melbourne.Sunrise().Format(formatStr))
-			fmt.Println(melbourne.Sunset().Format(formatStr))
-
-*/

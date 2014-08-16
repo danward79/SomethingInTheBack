@@ -41,8 +41,13 @@ func main() {
 
 	//Declare a new client, Publish incomming data
 	mqttClient := mqttservices.NewClient(mqttBrokerIP)
-	go mqttClient.PublishMap(fanIn(wemos.Start(), chJeeLink))
-	go mqttClient.PublishMap(melbourne.Start())
+
+	//assemble input channels to be multiplexed
+	var mapListChannels []<-chan map[string]interface{}
+	mapListChannels = append(mapListChannels, wemos.Start())
+	mapListChannels = append(mapListChannels, chJeeLink)
+	mapListChannels = append(mapListChannels, melbourne.Start())
+	go mqttClient.PublishMap(fanInArray(mapListChannels))
 
 	//TODO: Need to work out how to manage this
 	//Timebroadcast and subscription
@@ -77,5 +82,19 @@ func fanIn(input1 <-chan map[string]interface{}, input2 <-chan map[string]interf
 		}
 	}()
 
+	return c
+}
+
+//fanInArray is a version of fanIn which takes an array of chan map[string]interface{} making fanIn an expandable input multiplexer
+func fanInArray(inputChannels []<-chan map[string]interface{}) chan map[string]interface{} {
+	c := make(chan map[string]interface{})
+
+	for i := range inputChannels {
+		go func(chIn <-chan map[string]interface{}) {
+			for {
+				c <- <-chIn
+			}
+		}(inputChannels[i])
+	}
 	return c
 }

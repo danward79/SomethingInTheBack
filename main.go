@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/danward79/SomethingInTheBack/lib/decoder"
 	_ "github.com/danward79/SomethingInTheBack/lib/decoder/decoders"
 	"github.com/danward79/SomethingInTheBack/lib/mapper"
@@ -13,14 +12,12 @@ import (
 	"github.com/danward79/SomethingInTheBack/lib/wemodriver"
 )
 
-//TODO: Set up config file
-//TODO: Set up command line parsing
 const (
 	//"/dev/ttyUSB0" rPi USB, "/dev/ttyAMA0" rPi Header, "/dev/tty.usbserial-A1014KGL" Mac
 	portName            string = "/dev/tty.usbserial-A1014KGL" //Mac
 	baud                uint32 = 57600
 	logPathJeeLink      string = "./Logs/RFM12b/"
-	wemoIP              string = "192.168.0.6:6767"
+	wemoIP              string = "192.168.0.6:6767" //TODO: Resolve host IP
 	device              string = "en0"
 	timeout             int    = 600
 	logPathWemo         string = "./Logs/Wemo/"
@@ -49,8 +46,7 @@ func main() {
 	mapListChannels = append(mapListChannels, melbourne.Start())
 	go mqttClient.PublishMap(fanInArray(mapListChannels))
 
-	//TODO: Need to work out how to manage this
-	//Timebroadcast and subscription
+	//Timebroadcast and subscription, TODO: Need to work out how to manage this
 	chSub := mqttClient.Subscribe("home/#")
 	chTime := timebroadcast.New(timeBroadcastPeriod)
 

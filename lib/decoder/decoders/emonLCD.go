@@ -3,7 +3,6 @@ package decoders
 import (
 	"bytes"
 	"encoding/binary"
-
 	"github.com/danward79/SomethingInTheBack/lib/decoder"
 )
 
@@ -29,9 +28,8 @@ func EmonLcd(msgData []byte) map[string]interface{} {
 		_ = binary.Read(buf, binary.LittleEndian, &data)
 
 		m["nodeid"] = int(data.Node)
-		m["temp"] = int(data.Temp)
-		m["light"] = int(255 - data.Light)
-
+		m["temp"] = float64(data.Temp) / 100
+		m["light"] = int((float64(255-data.Light) / 255) * 100)
 	}
 	return m
 }

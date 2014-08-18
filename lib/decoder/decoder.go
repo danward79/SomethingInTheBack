@@ -15,7 +15,6 @@ func decode(chIn chan []byte, chOut chan map[string]interface{}) {
 				m = d(v)
 			}
 			chOut <- m
-
 		}
 	}
 }

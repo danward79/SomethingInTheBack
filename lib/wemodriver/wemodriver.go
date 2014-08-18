@@ -16,6 +16,7 @@ type Wemos struct {
 	interfaceDevice string
 	timeout         int
 	loggerPath      string
+	ChIn            chan map[string]bool
 }
 
 //New create a new device

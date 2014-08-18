@@ -91,6 +91,8 @@ func (c *MqttClient) PublishMap(chIn chan map[string]interface{}) {
 						data = strconv.Itoa(value)
 					case bool:
 						data = btos(value)
+					case float64:
+						data = strconv.FormatFloat(value, 'f', 2, 64)
 					}
 
 					c.Publish(topic+k, data, true)

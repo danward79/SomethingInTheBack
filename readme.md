@@ -46,9 +46,9 @@ I don't know how far I will take this, but here is a list of things in no partic
 - TODO: Method to allow command injection to Wemo, probably use format
 
 ```
-/home/room/device/instruction/command value
+/home/instruction/room/device/command value
 
-e.g. /home/lounge/lamp/instruction/state false
+e.g. /home/instruction/lounge/lamp/state false
 ```
 
 - TODO: Method to allow command injection to Sonos

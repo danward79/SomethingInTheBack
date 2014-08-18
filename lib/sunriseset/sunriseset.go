@@ -3,8 +3,8 @@ package sunriseset
 
 import (
 	"fmt"
+	"github.com/danward79/cron"
 	"github.com/danward79/sunrise"
-	"github.com/robfig/cron"
 	"time"
 )
 

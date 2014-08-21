@@ -34,9 +34,9 @@ func BaroNode(msgData []byte) map[string]interface{} {
 		_ = binary.Read(buf, binary.LittleEndian, &data)
 
 		m["nodeid"] = int(data.Node)
-		m["light"] = int(data.Light)
-		m["temp"] = int(data.Temp)
-		m["pressure"] = int(data.Press)
+		m["light"] = int((float64(data.Light) / 255) * 100)
+		m["temp"] = float64(data.Temp) / 10
+		m["pressure"] = float64(data.Press) / 100
 		m["battery"] = int(data.Battery)
 	}
 	return m

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/danward79/SomethingInTheBack/lib/decoder"
 	_ "github.com/danward79/SomethingInTheBack/lib/decoder/decoders"
@@ -10,34 +11,35 @@ import (
 	"github.com/danward79/SomethingInTheBack/lib/sunriseset"
 	"github.com/danward79/SomethingInTheBack/lib/timebroadcast"
 	"github.com/danward79/SomethingInTheBack/lib/wemodriver"
+	"log"
+	"os"
+	"strconv"
+	"strings"
 )
 
 const (
-	//"/dev/ttyUSB0" rPi USB, "/dev/ttyAMA0" rPi Header, "/dev/tty.usbserial-A1014KGL" Mac
-	portName            string = "/dev/tty.usbserial-A1014KGL" //Mac
-	baud                uint32 = 57600
-	logPathJeeLink      string = "./Logs/RFM12b/"
-	wemoIP              string = "192.168.0.6:6767" //TODO: Resolve host IP
-	device              string = "en0"
-	timeout             int    = 600
-	logPathWemo         string = "./Logs/Wemo/"
-	mqttBrokerIP        string = ":1883" //"test.mosquitto.org:1883"
-	timeBroadcastPeriod int    = 300
+	baud uint32 = 57600
 )
 
-func main() {
-	jeelink := rfm12b.New(portName, baud, logPathJeeLink)
-	wemos := wemodriver.New(wemoIP, device, timeout, logPathWemo)
-	melbourne := sunriseset.New(-37.81, 144.96)
+var config map[string]string
 
+func init() {
+	config = readConfig("./config.txt")
 	//Start mqtt Broker
-	go mqttservices.NewBroker(mqttBrokerIP).Run()
+	go mqttservices.NewBroker(config["mqttBrokerIP"]).Run()
+
+}
+
+func main() {
+	jeelink := rfm12b.New(config["portName"], baud, config["logPathJeeLink"])
+	wemos := wemodriver.New(config["wemoIP"], config["device"], Atoi(config["timeout"]), config["logPathWemo"])
+	melbourne := sunriseset.New(-37.81, 144.96)
 
 	//Both the wemo and the Jeelink output onto a channel, which is multiplexed bellow with fanIn
 	chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Open()))
 
 	//Declare a new client, Publish incomming data
-	mqttClient := mqttservices.NewClient(mqttBrokerIP)
+	mqttClient := mqttservices.NewClient(config["mqttBrokerIP"])
 
 	//assemble input channels to be multiplexed
 	var mapListChannels []<-chan map[string]interface{}
@@ -48,7 +50,7 @@ func main() {
 
 	//Timebroadcast and subscription, TODO: Need to work out how to manage this
 	chSub := mqttClient.Subscribe("home/#")
-	chTime := timebroadcast.New(timeBroadcastPeriod)
+	chTime := timebroadcast.New(Atoi(config["timeBroadcastPeriod"]))
 
 	for {
 		select {
@@ -93,4 +95,48 @@ func fanInArray(inputChannels []<-chan map[string]interface{}) chan map[string]i
 		}(inputChannels[i])
 	}
 	return c
+}
+
+//Atoi Helper to convert string to int.
+func Atoi(s string) int {
+	i, e := strconv.Atoi(s)
+	if e != nil {
+		return 0
+	}
+	return i
+}
+
+//ReadConfig takes a path to a configuration file and returns a map of configuration parameters
+func readConfig(path string) map[string]string {
+
+	configMap := make(map[string]string)
+
+	f, err := os.Open(path)
+	defer f.Close()
+	if err != nil {
+		return nil
+	}
+
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+
+		line := scanner.Text()
+
+		if !strings.HasPrefix(line, "//") {
+			fields := strings.SplitN(scanner.Text(), "=", 2)
+
+			configMap[strings.TrimSpace(fields[0])] = strings.TrimSpace(fields[1])
+		}
+
+	}
+
+	return configMap
+}
+
+//gotError checks for an error
+func gotError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }

@@ -35,7 +35,7 @@ func main() {
 	//Declare a new client, Publish incomming data
 	mqttClient := mqttservices.NewClient(config["mqttBrokerIP"])
 
-	//assemble input channels to be multiplexed
+	//Assemble input channels to be multiplexed
 	var mapListChannels []<-chan map[string]interface{}
 	mapListChannels = append(mapListChannels, wemos.Start())
 	mapListChannels = append(mapListChannels, chJeeLink)

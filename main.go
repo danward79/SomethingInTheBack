@@ -21,7 +21,7 @@ import (
 var config map[string]string
 
 func init() {
-	config = readConfig("./config.txt")
+	config = readConfig("./config.cfg")
 	//Start mqtt Broker
 	go mqttservices.NewBroker(config["mqttBrokerIP"]).Run()
 

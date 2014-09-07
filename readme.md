@@ -18,6 +18,7 @@ This repo is an attempt of a backend for some JeeNode and Wemo devices I have. T
 - Data is then published using the MQTT service. Which takes a channel of map[string]interface{}.
 - Time packet transmission to keep displays up to date.
 - Sunrise and Sunset MQTT events at -2, -1, 0, +1 hours. So an MQTT event at 2 hours, 1 hour before, at sunrise or sunset and one hour after.
+- All config data is now stored in config.txt
 
 **Using Channels** makes passing data around very easy. With a simple multiplexer and use of interfaces it is possible to push data in a similar manner to the publisher.
 
@@ -52,5 +53,5 @@ e.g. /home/instruction/lounge/lamp/state false
 ```
 
 - TODO: Method to allow command injection to Sonos
-- TODO: Add configuration file
+- ~~Add configuration file~~
 - TODO: How would rules be implemented?

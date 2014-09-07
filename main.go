@@ -17,10 +17,7 @@ import (
 	"strings"
 )
 
-const (
-	baud uint32 = 57600
-)
-
+//config stores config data read from the config file.
 var config map[string]string
 
 func init() {
@@ -31,11 +28,11 @@ func init() {
 }
 
 func main() {
-	jeelink := rfm12b.New(config["portName"], baud, config["logPathJeeLink"])
-	wemos := wemodriver.New(config["wemoIP"], config["device"], Atoi(config["timeout"]), config["logPathWemo"])
+	jeelink := rfm12b.New(config["portName"], atoui(config["baud"]), config["logPathJeeLink"])
+	wemos := wemodriver.New(config["wemoIP"], config["device"], atoi(config["timeout"]), config["logPathWemo"])
 	melbourne := sunriseset.New(-37.81, 144.96)
 
-	//Both the wemo and the Jeelink output onto a channel, which is multiplexed bellow with fanIn
+	//Both the wemo and the Jeelink output onto a channel, which is multiplexed below with fanIn
 	chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Open()))
 
 	//Declare a new client, Publish incomming data
@@ -50,7 +47,7 @@ func main() {
 
 	//Timebroadcast and subscription, TODO: Need to work out how to manage this
 	chSub := mqttClient.Subscribe("home/#")
-	chTime := timebroadcast.New(Atoi(config["timeBroadcastPeriod"]))
+	chTime := timebroadcast.New(atoi(config["timeBroadcastPeriod"]))
 
 	for {
 		select {
@@ -98,12 +95,21 @@ func fanInArray(inputChannels []<-chan map[string]interface{}) chan map[string]i
 }
 
 //Atoi Helper to convert string to int.
-func Atoi(s string) int {
+func atoi(s string) int {
 	i, e := strconv.Atoi(s)
 	if e != nil {
 		return 0
 	}
 	return i
+}
+
+//Atoui32 helper to convert string to uint32
+func atoui(s string) uint32 {
+	i, e := strconv.ParseUint(s, 10, 32)
+	if e != nil {
+		return 0
+	}
+	return uint32(i)
 }
 
 //ReadConfig takes a path to a configuration file and returns a map of configuration parameters

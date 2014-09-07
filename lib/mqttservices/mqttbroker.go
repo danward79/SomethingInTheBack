@@ -2,10 +2,10 @@
 package mqttservices
 
 import (
+	"github.com/jeffallen/mqtt"
+
 	"log"
 	"net"
-
-	"github.com/jeffallen/mqtt"
 )
 
 //MqttBroker struct

@@ -61,7 +61,7 @@ func (c *MqttClient) Publish(topic string, data string, retain bool) {
 	}
 
 	ccPub.Publish(&proto.Publish{
-		//TODO: Investigate if Retain actually works.
+		//FIXME: Investigate if Retain actually works.
 		//Header: proto.Header{
 		//DupFlag: false,
 		//QosLevel: proto.QosAtLeastOnce,

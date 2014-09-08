@@ -53,6 +53,7 @@ func (r *Rfm12b) read() {
 			r.logger.Log(line)
 		}
 
+		//FIXME: RFM2PI Compatibility
 		//If msgs are valid pass to channel -minus the "OK"
 		if oa[0] == "OK" {
 			for i := 1; i < len(oa); i++ {

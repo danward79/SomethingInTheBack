@@ -3,16 +3,16 @@ SomethingInTheBack
 
 This repo is a further exploration into GO for me.
 
-I was / am following the [Housemon](https://github.com/jcw/housemon) project closely. The work there is truely cool, but being a project of that nature the direction changes frequently and this meant that for me progress was too slow. So rather than get frustrated. I thought I would bugger off and learn a bit of GO. Being a practicle person I wanted to learn with building a real thing. So.
+I was / am following the [Housemon](https://github.com/jcw/housemon) project closely. The work there is truly cool, but being a project of that nature the direction changes frequently and this meant that for me progress was too slow. So rather than get frustrated. I thought I would bugger off and learn a bit of GO. Being a practical person I wanted to learn with building a real thing. So.
 
 This repo is an attempt of a backend for some JeeNode and Wemo devices I have. There is a large amount of inspiration from JCWs work. So don't be surprised when this seem familiar.
 
 ###Currently it has the following functionality.
 
-- MQTT Broker which manages subscriptions and published data. Uses the MQTT Services library, which uses [Jeffallen's](https://github.com/jeffallen/mqtt) and [Huin's](https://github.com/huin/mqtt) librarys
+- MQTT Broker which manages subscriptions and published data. Uses the MQTT Services library, which uses [Jeffallen's](https://github.com/jeffallen/mqtt) and [Huin's](https://github.com/huin/mqtt) libraries. Equally an alternative MQTT broker could be used such as [Mosquitto](http://mosquitto.org)
 - Two-way Serial interface to JeeLink so that RF messages can be received which use the Arduino RFM12b driver from Jeelabs. Uses the serial library from [Chimera](https://github.com/chimera/rs232), outputs a channel of bytes.
 - Wemo interface which subscribes to any discovered devices. So that state changes are received. This uses a version of [Savaki's library](https://github.com/savaki/go.wemo), to which I added a subscription service. Which is [here](https://github.com/danward79/go.wemo). I am waiting for my [pull](https://github.com/savaki/go.wemo/pull/1) request. This outputs a channel of map[string]interface{}.
-- Logging device which can be passed to the Wemo and RFM12b drivers above to log the incomming data. This produces exactly the same output as JCW's logger. It is called with a simple string.
+- Logging device which can be passed to the Wemo and RFM12b drivers above to log the incoming data. This produces exactly the same output as JCW's logger. It is called with a simple string.
 - RFM12b packets are decoded by the decoder and it's decoders. This outputs a channel of map[string]interface{}.
 - These are routed through a mapper which adds location info. This outputs a channel of map[string]interface{}.
 - Data is then published using the MQTT service. Which takes a channel of map[string]interface{}.
@@ -27,7 +27,7 @@ This repo is an attempt of a backend for some JeeNode and Wemo devices I have. T
 chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Start()))
 chWemo := wemos.Start()
 
-//Declare a new client, Publish incomming data
+//Declare a new client, Publish incoming data
 mqttClient := mqttservices.NewClient(mqttBrokerIP)
 go mqttClient.PublishMap(fanIn(chWemo, chJeeLink))
 ```
@@ -37,13 +37,13 @@ go mqttClient.PublishMap(fanIn(chWemo, chJeeLink))
 I don't know how far I will take this, but here is a list of things in no particular order that need doing.
 
 - ~~Serial driver needs to be converted to be two way. The main reason for this is...~~
-- ~~I need to make time transmissions to keep my display upto date. This is done elsewhere at the moment.~~
-- TODO: Database needs choosing and a ...
-- TODO: method of adding data decided on. Subscribe to all events and use MQTT or hook in earlier in the chain?
+- ~~I need to make time transmissions to keep my display up to date. This is done elsewhere at the moment.~~
 - ~~Time based task scheduler so that...~~
 - ~~Sunrise and Set events can be sent~~
-- TODO: Weather forecast subscription, probably using Yahoo weather.
-- TODO: Sonos subscription
+- ~~Add configuration file~~
+- TODO: As I am going away soon, a replay service for the sensor logs would be useful so I can fiddle on the plane! (Now I know a good reason JCW did it!)
+- TODO: Database needs choosing and a ...
+- TODO: method of adding data decided on. Subscribe to all events and use MQTT or hook in earlier in the chain?
 - TODO: Method to allow command injection to Wemo, probably use format
 
 ```
@@ -51,7 +51,7 @@ I don't know how far I will take this, but here is a list of things in no partic
 
 e.g. /home/instruction/lounge/lamp/state false
 ```
-
+- TODO: Weather forecast subscription, probably using Yahoo weather.
+- TODO: Sonos subscription
 - TODO: Method to allow command injection to Sonos
-- ~~Add configuration file~~
 - TODO: How would rules be implemented?

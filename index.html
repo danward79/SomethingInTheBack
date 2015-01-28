@@ -1,38 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
     <title>Somethingintheback by danward79</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
-
   <body>
-    <div id="container">
-      <div class="inner">
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/danward79/SomethingInTheBack">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/danward79/SomethingInTheBack/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/danward79/SomethingInTheBack/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
 
-        <header>
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
           <h1>Somethingintheback</h1>
-          <h2>Backend for some sensors and home automation stuff</h2>
-        </header>
+          <p>Backend for some sensors and home automation stuff</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/danward79">danward79</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/danward79/SomethingInTheBack/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/danward79/SomethingInTheBack/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/danward79/SomethingInTheBack" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
-
-        <hr>
-
-        <section id="main_content">
-          <h1>
-<a name="somethingintheback" class="anchor" href="#somethingintheback"><span class="octicon octicon-link"></span></a>SomethingInTheBack</h1>
+        <h1>
+<a id="somethingintheback" class="anchor" href="#somethingintheback" aria-hidden="true"><span class="octicon octicon-link"></span></a>SomethingInTheBack</h1>
 
 <p>This repo is a further exploration into GO for me.</p>
 
@@ -41,7 +48,7 @@
 <p>This repo is an attempt of a backend for some JeeNode and Wemo devices I have. There is a large amount of inspiration from JCWs work. So don't be surprised when this seem familiar.</p>
 
 <h3>
-<a name="currently-it-has-the-following-functionality" class="anchor" href="#currently-it-has-the-following-functionality"><span class="octicon octicon-link"></span></a>Currently it has the following functionality.</h3>
+<a id="currently-it-has-the-following-functionality" class="anchor" href="#currently-it-has-the-following-functionality" aria-hidden="true"><span class="octicon octicon-link"></span></a>Currently it has the following functionality.</h3>
 
 <ul>
 <li>MQTT Broker which manages subscriptions and published data. Uses the MQTT Services library, which uses <a href="https://github.com/jeffallen/mqtt">Jeffallen's</a> and <a href="https://github.com/huin/mqtt">Huin's</a> libraries. Equally an alternative MQTT broker could be used such as <a href="http://mosquitto.org">Mosquitto</a>
@@ -55,7 +62,9 @@
 <li>Time packet transmission to keep displays up to date.</li>
 <li>Sunrise and Sunset MQTT events at -2, -1, 0, +1 hours. So an MQTT event at 2 hours, 1 hour before, at sunrise or sunset and one hour after.</li>
 <li>All config data is now stored in config.txt</li>
-</ul><p><strong>Using Channels</strong> makes passing data around very easy. With a simple multiplexer and use of interfaces it is possible to push data in a similar manner to the publisher.</p>
+</ul>
+
+<p><strong>Using Channels</strong> makes passing data around very easy. With a simple multiplexer and use of interfaces it is possible to push data in a similar manner to the publisher.</p>
 
 <pre><code>//Both the wemo and the Jeelink output onto a channel, which is multiplexed bellow with fanIn then published
 chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Start()))
@@ -67,7 +76,7 @@ go mqttClient.PublishMap(fanIn(chWemo, chJeeLink))
 </code></pre>
 
 <h3>
-<a name="whats-next" class="anchor" href="#whats-next"><span class="octicon octicon-link"></span></a>What's Next?</h3>
+<a id="whats-next" class="anchor" href="#whats-next" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's Next?</h3>
 
 <p>I don't know how far I will take this, but here is a list of things in no particular order that need doing.</p>
 
@@ -81,7 +90,9 @@ go mqttClient.PublishMap(fanIn(chWemo, chJeeLink))
 <li>TODO: Database needs choosing and a ...</li>
 <li>TODO: method of adding data decided on. Subscribe to all events and use MQTT or hook in earlier in the chain?</li>
 <li>TODO: Method to allow command injection to Wemo, probably use format</li>
-</ul><pre><code>/home/instruction/room/device/command value
+</ul>
+
+<pre><code>/home/instruction/room/device/command value
 
 e.g. /home/instruction/lounge/lamp/state false
 </code></pre>
@@ -92,15 +103,10 @@ e.g. /home/instruction/lounge/lamp/state false
 <li>TODO: Method to allow command injection to Sonos</li>
 <li>TODO: How would rules be implemented?</li>
 </ul>
-        </section>
+      </section>
 
-        <footer>
-          Somethingintheback is maintained by <a href="https://github.com/danward79">danward79</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
-
-        
-      </div>
     </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
   </body>
 </html>

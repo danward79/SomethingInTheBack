@@ -19,6 +19,11 @@ This repo is an attempt of a backend for some JeeNode and Wemo devices I have. T
 - Time packet transmission to keep displays up to date.
 - Sunrise and Sunset MQTT events at -2, -1, 0, +1 hours. So an MQTT event at 2 hours, 1 hour before, at sunrise or sunset and one hour after.
 - All config data is now stored in config.txt
+- Added ability to replay a RFM12B log file. See below. This mimicks a RFM12b demo receiver.
+
+```
+chJeeLink := mapper.Map(decoder.ChannelDecode(logreplay.Replay("./Logs/RFM12b/2014/20140810.txt")))
+```
 
 **Using Channels** makes passing data around very easy. With a simple multiplexer and use of interfaces it is possible to push data in a similar manner to the publisher.
 
@@ -41,9 +46,9 @@ I don't know how far I will take this, but here is a list of things in no partic
 - ~~Time based task scheduler so that...~~
 - ~~Sunrise and Set events can be sent~~
 - ~~Add configuration file~~
-- TODO: As I am going away soon, a replay service for the sensor logs would be useful so I can fiddle on the plane! (Now I know a good reason JCW did it!)
-- TODO: Database needs choosing and a ...
-- TODO: method of adding data decided on. Subscribe to all events and use MQTT or hook in earlier in the chain?
+- ~~As I am going away soon, a replay service for the sensor logs would be useful so I can fiddle on the plane! (Now I know a good reason JCW did it!)~~
+- ~~Database needs choosing and a ...~~ I think I'll use influxdb
+- ~~method of adding data decided on. Subscribe to all events and use MQTT or hook in earlier in the chain?~~ I'm going to subscribe via MQTT
 - TODO: Method to allow command injection to Wemo, probably use format
 
 ```
@@ -51,6 +56,7 @@ I don't know how far I will take this, but here is a list of things in no partic
 
 e.g. /home/instruction/lounge/lamp/state false
 ```
+
 - TODO: Weather forecast subscription, probably using Yahoo weather.
 - TODO: Sonos subscription
 - TODO: Method to allow command injection to Sonos

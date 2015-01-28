@@ -10,6 +10,7 @@ var Register = map[int]string{}
 //Add devices with nodeids to Register at start. Not necessary for Wemo devices.
 func init() {
 	Register[11] = "Bedroom"
+	Register[15] = "Lab"
 	Register[16] = "Balcony"
 	Register[17] = "Lounge"
 }

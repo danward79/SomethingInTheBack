@@ -53,12 +53,15 @@ func (r *Rfm12b) read() {
 			r.logger.Log(line)
 		}
 
-		//FIXME: RFM2PI Compatibility
 		//If msgs are valid pass to channel -minus the "OK"
 		if oa[0] == "OK" {
 			for i := 1; i < len(oa); i++ {
 				v, err := strconv.ParseInt(oa[i], 10, 16)
 				if err == nil {
+					//Added this code to remove CTL, DST and Ack bits from header. 24/01/15
+					if i == 1 {
+						v = int64(byte(v) & 0x1F)
+					}
 					out = append(out, byte(v))
 				}
 			}

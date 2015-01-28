@@ -1,1 +1,4 @@
 *.txt
+*.001
+
+influxdb.log

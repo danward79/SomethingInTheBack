@@ -3,6 +3,7 @@ package decoders
 import (
 	"bytes"
 	"encoding/binary"
+
 	"github.com/danward79/SomethingInTheBack/lib/decoder"
 )
 

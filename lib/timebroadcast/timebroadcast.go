@@ -17,7 +17,7 @@ func New(p int) chan interface{} {
 		tmr = time.AfterFunc(period, func() {
 			tmr.Reset(period)
 
-			chOut <- fmt.Sprintf("116," + time.Now().Format(layout) + ",s")
+			chOut <- fmt.Sprint("116," + time.Now().Format(layout) + ",s")
 		})
 
 	}(time.Duration(p)*time.Second, chOut)

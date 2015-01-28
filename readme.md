@@ -18,7 +18,7 @@ This repo is an attempt of a backend for some JeeNode and Wemo devices I have. T
 -	Data is then published using the MQTT service. Which takes a channel of map[string]interface{}.
 -	Time packet transmission to keep displays up to date.
 -	Sunrise and Sunset MQTT events at -2, -1, 0, +1 hours. So an MQTT event at 2 hours, 1 hour before, at sunrise or sunset and one hour after.
--	All config data is now stored in config.txt
+-	All config data is now stored in config.cfg
 -	Added ability to replay a RFM12B log file. See below. This mimicks a RFM12b demo receiver.
 
 ```
@@ -49,6 +49,8 @@ I don't know how far I will take this, but here is a list of things in no partic
 -	~~As I am going away soon, a replay service for the sensor logs would be useful so I can fiddle on the plane! (Now I know a good reason JCW did it!)~~
 -	~~Database needs choosing and a ...~~ I think I'll use influxdb
 -	~~method of adding data decided on. ~~Subscribe to all events and use MQTT or hook in earlier in the chain?~~ I'm going to subscribe via MQTT
+-	TODO: Fix CR's after time broadcast causing RFM12B Demo to display menu options twice.
+-	TODO: Having decide on db option and interface method. Develope drivers.
 -	TODO: Method to allow command injection to Wemo, probably use format
 
 ```

@@ -49,7 +49,7 @@ I don't know how far I will take this, but here is a list of things in no partic
 -	~~As I am going away soon, a replay service for the sensor logs would be useful so I can fiddle on the plane! (Now I know a good reason JCW did it!)~~
 -	~~Database needs choosing and a ...~~ I think I'll use influxdb
 -	~~method of adding data decided on. ~~Subscribe to all events and use MQTT or hook in earlier in the chain?~~ I'm going to subscribe via MQTT
--	TODO: Fix CR's after time broadcast causing RFM12B Demo to display menu options twice.
+-	~~TODO: Fix CR's after time broadcast causing RFM12B Demo to display menu options twice.~~
 -	TODO: Having decide on db option and interface method. Develope drivers.
 -	TODO: Method to allow command injection to Wemo, probably use format
 

@@ -7,6 +7,7 @@ import (
 	"github.com/danward79/SomethingInTheBack/lib/decoder"
 )
 
+// RoomData Structure
 type RoomData struct {
 	Node     byte
 	Light    byte // light sensor: 0..255
@@ -17,7 +18,7 @@ type RoomData struct {
 }
 
 func init() {
-	decoder.Register[15] = Room
+	decoder.Register[99] = Room
 }
 
 // Room decoder

@@ -16,14 +16,14 @@ var config map[string]string
 
 func init() {
 	//Load the configuration data into the config map
-	config = utils.ReadConfig("./config.cfg")
+	config = utils.ReadConfig("./config_mac.cfg")
 	//Start mqtt Broker
 	go mqttservices.NewBroker(config["mqttBrokerIP"]).Run()
 }
 
 func main() {
 	//Both the wemo and the Jeelink output onto a channel, which is multiplexed below with fanIn
-	chJeeLink := mapper.Map(decoder.ChannelDecode(logreplay.Replay("./Logs/RFM12b/2014/20140810.txt")))
+	chJeeLink := mapper.Map(decoder.ChannelDecode(logreplay.Replay("./Logs/RFM12b/2015/20150127.txt")))
 
 	//Declare a new client, Publish incomming data
 	mqttClient := mqttservices.NewClient("localhost:1883")

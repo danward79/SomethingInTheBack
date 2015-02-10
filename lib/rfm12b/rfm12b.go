@@ -89,7 +89,7 @@ func (r *Rfm12b) write(d interface{}) error {
 
 	switch value := d.(type) {
 	case string:
-		_, err := r.device.Write([]byte(value + "/n"))
+		_, err := r.device.Write([]byte(value)) // + "/n")) //Removed CR to workout if this is the source of the menu showing. Twice.
 		return err
 		//TODO: Handle other types
 		//case byte:

@@ -17,6 +17,7 @@ type MotionData struct {
 
 func init() {
 	decoder.Register[15] = Motion
+	decoder.Register[19] = Motion
 }
 
 // Motion decoder

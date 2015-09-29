@@ -18,7 +18,7 @@ func init() {
 	//Load the configuration data into the config map
 	config = utils.ReadConfig("./config_mac.cfg")
 	//Start mqtt Broker
-	go mqttservices.NewBroker(config["mqttBrokerIP"]).Run()
+	//go mqttservices.NewBroker(config["mqttBrokerIP"]).Run()
 }
 
 func main() {
@@ -26,7 +26,7 @@ func main() {
 	chJeeLink := mapper.Map(decoder.ChannelDecode(logreplay.Replay("./Logs/RFM12b/2015/20150127.txt")))
 
 	//Declare a new client, Publish incomming data
-	mqttClient := mqttservices.NewClient("localhost:1883")
+	mqttClient := mqttservices.NewClient("mqttServerIP")
 
 	//Assemble input channels to be multiplexed
 	var mapListChannels []<-chan map[string]interface{}

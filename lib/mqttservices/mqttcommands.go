@@ -2,6 +2,7 @@
 package mqttservices
 
 import (
+	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -21,16 +22,23 @@ type MqttClient struct {
 
 //NewClient declares a new broker
 func NewClient(port string) *MqttClient {
-	return &MqttClient{Port: port}
+	m := &MqttClient{Port: port}
+	fmt.Println(m)
+	return m
+}
+
+//String returns details of the MqttClient
+func (c *MqttClient) String() string {
+	return fmt.Sprintf("MqttClient: IP %s", c.Port)
 }
 
 //Subscribe to MQTT Topic, takes topic as a string
 func (c *MqttClient) Subscribe(topic string) chan *proto.Publish {
 
 	if ccSub == nil {
+
 		con, err := net.Dial("tcp", c.Port)
 		gotError(err)
-		//defer c.Close()
 
 		ccSub = mqtt.NewClientConn(con)
 
@@ -52,7 +60,6 @@ func (c *MqttClient) Publish(topic string, data string, retain bool) {
 	if ccPub == nil {
 		con, err := net.Dial("tcp", c.Port)
 		gotError(err)
-		//defer c.Close()
 
 		ccPub = mqtt.NewClientConn(con)
 
@@ -61,12 +68,11 @@ func (c *MqttClient) Publish(topic string, data string, retain bool) {
 	}
 
 	ccPub.Publish(&proto.Publish{
-		//FIXME: Investigate if Retain actually works.
-		//Header: proto.Header{
-		//DupFlag: false,
-		//QosLevel: proto.QosAtLeastOnce,
-		//Retain: true,
-		//},
+		Header: proto.Header{
+			//	DupFlag:  false,
+			//	QosLevel: proto.QosAtLeastOnce,
+			Retain: retain,
+		},
 		TopicName: topic,
 		Payload:   proto.BytesPayload(data),
 	})

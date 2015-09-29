@@ -13,6 +13,7 @@ func init() {
 	Register[15] = "Lab"
 	Register[16] = "Balcony"
 	Register[17] = "Lounge"
+	Register[19] = "LabBB"
 }
 
 //Map takes a map of strings and ensure that there is a location attribute.

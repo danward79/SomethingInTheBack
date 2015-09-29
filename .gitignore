@@ -2,3 +2,5 @@
 *.001
 
 influxdb.log
+
+.DS_Store

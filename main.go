@@ -19,14 +19,11 @@ var config map[string]string
 func init() {
 	//Load the configuration data into the config map
 	config = utils.ReadConfig("./config_pi.cfg")
-	//Start mqtt Broker
-	//go mqttservices.NewBroker(config["mqttBrokerIP"]).Run()
 }
 
 func main() {
 	jeelink := rfm12b.New(config["portName"], utils.Atoui(config["baud"]), config["logPathJeeLink"])
 	wemos := wemodriver.New(config["wemoIP"], config["device"], utils.Atoi(config["timeout"]), config["logPathWemo"])
-	//melbourne := sunriseset.New(-37.81, 144.96)
 
 	//Both the wemo and the Jeelink output onto a channel, which is multiplexed bellow with utils.FanInArray
 	chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Open()))
@@ -38,7 +35,6 @@ func main() {
 	var mapListChannels []<-chan map[string]interface{}
 	mapListChannels = append(mapListChannels, wemos.Start())
 	mapListChannels = append(mapListChannels, chJeeLink)
-	//mapListChannels = append(mapListChannels, melbourne.Start())
 	go mqttClient.PublishMap(utils.FanInArray(mapListChannels))
 
 	//Timebroadcast and subscription, TODO: Need to work out how to manage this

@@ -101,7 +101,7 @@ func (c *MqttClient) PublishMap(chIn chan map[string]interface{}) {
 						data = strconv.FormatFloat(value, 'f', 2, 64)
 					}
 
-					c.Publish(topic+k, data, true)
+					c.Publish(topic+k, data, false)
 				}
 			}
 		}

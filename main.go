@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
 
 	"github.com/danward79/SomethingInTheBack/lib/decoder"
 	_ "github.com/danward79/SomethingInTheBack/lib/decoder/decoders"
@@ -18,7 +20,15 @@ var config map[string]string
 
 func init() {
 	//Load the configuration data into the config map
-	config = utils.ReadConfig("./config_pi.cfg")
+	file := flag.String("c", "", "path to config")
+	flag.Parse()
+
+	if *file == "" {
+		log.Fatal("Need to specifiy config file")
+	}
+
+	config = utils.ReadConfig(*file)
+
 }
 
 func main() {
@@ -46,6 +56,7 @@ func main() {
 		case m := <-chSub:
 			fmt.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
 		case m := <-chTime:
+			fmt.Println("***Time Broadcast***")
 			jeelink.ChIn <- m
 		}
 	}

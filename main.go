@@ -7,6 +7,7 @@ import (
 
 	"github.com/danward79/SomethingInTheBack/lib/decoder"
 	_ "github.com/danward79/SomethingInTheBack/lib/decoder/decoders"
+	"github.com/danward79/SomethingInTheBack/lib/logreplay"
 	"github.com/danward79/SomethingInTheBack/lib/mapper"
 	"github.com/danward79/SomethingInTheBack/lib/mqttservices"
 	"github.com/danward79/SomethingInTheBack/lib/rfm12b"
@@ -32,24 +33,37 @@ func init() {
 }
 
 func main() {
-	jeelink := rfm12b.New(config["portName"], utils.Atoui(config["baud"]), config["logPathJeeLink"])
-	wemos := wemodriver.New(config["wemoIP"], config["device"], utils.Atoi(config["timeout"]), config["logPathWemo"])
 
-	//Both the wemo and the Jeelink output onto a channel, which is multiplexed bellow with utils.FanInArray
-	chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Open()))
+	//Assemble input channels to be multiplexed
+	var mapListChannels []<-chan map[string]interface{}
+	chTime := make(chan interface{})
+	var jeelink = rfm12b.Rfm12b{ChIn: make(chan interface{})}
+
+	if config["portName"] != "" {
+		jeelink := rfm12b.New(config["portName"], utils.Atoui(config["baud"]), config["logPathJeeLink"])
+		chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Open()))
+		mapListChannels = append(mapListChannels, chJeeLink)
+		chTime = timebroadcast.New(utils.Atoi(config["timeBroadcastPeriod"]))
+	}
+
+	if config["wemoIP"] != "" {
+		wemos := wemodriver.New(config["wemoIP"], config["device"], utils.Atoi(config["timeout"]), config["logPathWemo"])
+		mapListChannels = append(mapListChannels, wemos.Start())
+	}
+
+	if config["replayPath"] != "" {
+		chJeeLink := mapper.Map(decoder.ChannelDecode(logreplay.Replay("./Logs/RFM12b/2015/20151001.txt")))
+		mapListChannels = append(mapListChannels, chJeeLink)
+	}
 
 	//Declare a new client, Publish incomming data
 	mqttClient := mqttservices.NewClient(config["mqttServerIP"])
 
-	//Assemble input channels to be multiplexed
-	var mapListChannels []<-chan map[string]interface{}
-	mapListChannels = append(mapListChannels, wemos.Start())
-	mapListChannels = append(mapListChannels, chJeeLink)
+	//Both the wemo and the Jeelink output onto a channel, which is multiplexed bellow with utils.FanInArray
 	go mqttClient.PublishMap(utils.FanInArray(mapListChannels))
 
 	//Timebroadcast and subscription, TODO: Need to work out how to manage this
 	chSub := mqttClient.Subscribe("home/#")
-	chTime := timebroadcast.New(utils.Atoi(config["timeBroadcastPeriod"]))
 
 	for {
 		select {

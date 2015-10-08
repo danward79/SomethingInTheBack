@@ -4,10 +4,11 @@ package wemodriver
 
 import (
 	"fmt"
-	"github.com/danward79/SomethingInTheBack/lib/logger"
-	"github.com/danward79/go.wemo"
 	"log"
 	"time"
+
+	"github.com/danward79/go.wemo"
+	"github.com/danward79/logger"
 )
 
 //Wemos structure

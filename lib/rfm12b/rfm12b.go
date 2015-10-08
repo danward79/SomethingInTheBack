@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/chimera/rs232"
-	"github.com/danward79/SomethingInTheBack/lib/logger"
+	"github.com/danward79/logger"
 )
 
 //Rfm12b configuration data

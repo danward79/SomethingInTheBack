@@ -14,6 +14,7 @@ import (
 	"github.com/danward79/SomethingInTheBack/lib/utils"
 	"github.com/danward79/SomethingInTheBack/lib/wemodriver"
 	"github.com/danward79/mqttservices"
+	proto "github.com/huin/mqtt"
 )
 
 //config stores config data read from the config file.
@@ -63,7 +64,10 @@ func main() {
 	go mqttClient.PublishMap(utils.FanInArray(mapListChannels))
 
 	//Timebroadcast and subscription, TODO: Need to work out how to manage this
-	chSub := mqttClient.Subscribe("home/#")
+	chSub := mqttClient.Subscribe([]proto.TopicQos{{
+		Topic: "home/#",
+		Qos:   proto.QosAtMostOnce,
+	}})
 
 	for {
 		select {

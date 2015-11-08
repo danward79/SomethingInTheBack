@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/danward79/SomethingInTheBack/lib/decoder"
@@ -72,9 +71,9 @@ func main() {
 	for {
 		select {
 		case m := <-chSub:
-			fmt.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
+			log.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
 		case m := <-chTime:
-			fmt.Println("***Time Broadcast***")
+			log.Println("***Time Broadcast")
 			jeelink.ChIn <- m
 		}
 	}

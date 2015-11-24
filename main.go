@@ -71,8 +71,18 @@ func main() {
 	broadcastTime(chTime, jeelink.ChIn)
 
 	for {
+<<<<<<< Updated upstream
 		m := <-chSub
 		log.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
+=======
+		select {
+		case m := <-chSub:
+			log.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
+		case m := <-chTime:
+			//log.Println("***Time Broadcast")
+			jeelink.ChIn <- m
+		}
+>>>>>>> Stashed changes
 	}
 
 }

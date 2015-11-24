@@ -77,11 +77,7 @@ func (r *Rfm12b) Open() chan []byte {
 
 	go func(chIn chan interface{}) {
 		for m := range chIn {
-<<<<<<< Updated upstream
 			log.Println("Write: ", r.portName, m)
-=======
-			log.Println(m)
->>>>>>> Stashed changes
 			r.write(m)
 		}
 	}(r.ChIn)

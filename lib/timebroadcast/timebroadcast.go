@@ -16,24 +16,10 @@ func New(p int) chan interface{} {
 
 		t := time.NewTicker(period)
 		for _ = range t.C {
-<<<<<<< Updated upstream
 			chOut <- fmt.Sprint("116," + time.Now().Format(layout) + ",s")
 			log.Println("Time Broadcast")
 		}
-=======
-			log.Println("***Time Broadcast")
-			chOut <- fmt.Sprint("116," + time.Now().Format(layout) + ",s")
-		}
 
-		/*
-			var tmr *time.Timer
-			tmr = time.AfterFunc(period, func() {
-				tmr.Reset(period)
->>>>>>> Stashed changes
-
-				chOut <- fmt.Sprint("116," + time.Now().Format(layout) + ",s")
-			})
-		*/
 	}(time.Duration(p)*time.Second, chOut)
 
 	return chOut

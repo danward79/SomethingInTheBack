@@ -3,6 +3,7 @@ package timebroadcast
 
 import (
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -13,12 +14,11 @@ func New(p int) chan interface{} {
 	go func(period time.Duration, chOut chan interface{}) {
 		const layout = "15,04,00"
 
-		var tmr *time.Timer
-		tmr = time.AfterFunc(period, func() {
-			tmr.Reset(period)
-
+		t := time.NewTicker(period)
+		for _ = range t.C {
 			chOut <- fmt.Sprint("116," + time.Now().Format(layout) + ",s")
-		})
+			log.Println("Time Broadcast")
+		}
 
 	}(time.Duration(p)*time.Second, chOut)
 

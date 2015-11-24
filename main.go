@@ -37,10 +37,10 @@ func main() {
 	//Assemble input channels to be multiplexed
 	var mapListChannels []<-chan map[string]interface{}
 	chTime := make(chan interface{})
-	var jeelink = rfm12b.Rfm12b{ChIn: make(chan interface{})}
+	var jeelink = &rfm12b.Rfm12b{ChIn: make(chan interface{})}
 
 	if config["portName"] != "" {
-		jeelink := rfm12b.New(config["portName"], utils.Atoui(config["baud"]), config["logPathJeeLink"])
+		jeelink = rfm12b.New(config["portName"], utils.Atoui(config["baud"]), config["logPathJeeLink"])
 		chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Open()))
 		mapListChannels = append(mapListChannels, chJeeLink)
 		chTime = timebroadcast.New(utils.Atoi(config["timeBroadcastPeriod"]))
@@ -68,14 +68,20 @@ func main() {
 		Qos:   proto.QosAtMostOnce,
 	}})
 
+	broadcastTime(chTime, jeelink.ChIn)
+
 	for {
-		select {
-		case m := <-chSub:
-			log.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
-		case m := <-chTime:
-			log.Println("***Time Broadcast")
-			jeelink.ChIn <- m
-		}
+		m := <-chSub
+		log.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
 	}
 
+}
+
+//broadcastTime
+func broadcastTime(chTime chan interface{}, chLink chan interface{}) {
+	go func() {
+		for {
+			chLink <- <-chTime
+		}
+	}()
 }

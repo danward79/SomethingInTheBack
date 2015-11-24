@@ -77,6 +77,7 @@ func (r *Rfm12b) Open() chan []byte {
 
 	go func(chIn chan interface{}) {
 		for m := range chIn {
+			log.Println("Write: ", r.portName, m)
 			r.write(m)
 		}
 	}(r.ChIn)

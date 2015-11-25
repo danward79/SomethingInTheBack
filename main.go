@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"sync"
 
 	"github.com/danward79/SomethingInTheBack/lib/decoder"
 	_ "github.com/danward79/SomethingInTheBack/lib/decoder/decoders"
@@ -20,6 +21,8 @@ import (
 var config map[string]string
 
 func init() {
+	log.Println("SomeThingInTheBack - Started")
+
 	//Load the configuration data into the config map
 	file := flag.String("c", "", "path to config")
 	flag.Parse()
@@ -29,10 +32,12 @@ func init() {
 	}
 
 	config = utils.ReadConfig(*file)
-
 }
 
 func main() {
+
+	//Waitgroup for go routines
+	var wg sync.WaitGroup
 
 	//Assemble input channels to be multiplexed
 	var mapListChannels []<-chan map[string]interface{}
@@ -44,6 +49,8 @@ func main() {
 		chJeeLink := mapper.Map(decoder.ChannelDecode(jeelink.Open()))
 		mapListChannels = append(mapListChannels, chJeeLink)
 		chTime = timebroadcast.New(utils.Atoi(config["timeBroadcastPeriod"]))
+
+		broadcastTime(chTime, jeelink.ChIn, &wg)
 	}
 
 	if config["wemoIP"] != "" {
@@ -62,26 +69,41 @@ func main() {
 	//Both the wemo and the Jeelink output onto a channel, which is multiplexed bellow with utils.FanInArray
 	go mqttClient.PublishMap(utils.FanInArray(mapListChannels))
 
-	//Timebroadcast and subscription, TODO: Need to work out how to manage this
-	chSub := mqttClient.Subscribe([]proto.TopicQos{{
-		Topic: "home/#",
-		Qos:   proto.QosAtMostOnce,
-	}})
+	//Subscribe and log events
+	subscriptions("home/#", mqttClient, &wg)
 
-	broadcastTime(chTime, jeelink.ChIn)
-
-	for {
-		m := <-chSub
-		log.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
-	}
-
+	//Wait for go routines to return
+	wg.Wait()
 }
 
-//broadcastTime
-func broadcastTime(chTime chan interface{}, chLink chan interface{}) {
+//broadcastTime - pass time to the serial device
+func broadcastTime(chTime chan interface{}, chLink chan interface{}, wg *sync.WaitGroup) {
+	wg.Add(1)
+
 	go func() {
+		defer wg.Done()
+
 		for {
 			chLink <- <-chTime
+		}
+	}()
+}
+
+//subscriptions - Log subscriptions
+func subscriptions(t string, c *mqttservices.MqttClient, wg *sync.WaitGroup) {
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+
+		chSub := c.Subscribe([]proto.TopicQos{{
+			Topic: t,
+			Qos:   proto.QosAtMostOnce,
+		}})
+
+		for {
+			m := <-chSub
+			log.Printf("%s\t\t%s\n", m.TopicName, m.Payload)
 		}
 	}()
 }

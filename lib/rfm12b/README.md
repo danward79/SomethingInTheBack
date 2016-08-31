@@ -9,7 +9,7 @@ provides struct {NodeId, MsgData[]bytes} via channel provided in start.
 
 Example
 
-```
+```go
 
 
 const (
